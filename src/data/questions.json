@@ -1,0 +1,146 @@
+[
+  {
+    "id": "fund-b1",
+    "level": "beginner",
+    "category": "fundamentos",
+    "answer": true,
+    "statement": "O Claude Code é executado como uma ferramenta de linha de comando (CLI) no terminal do desenvolvedor.",
+    "explanation": "Claude Code roda localmente no terminal, interagindo com o sistema de arquivos e as ferramentas do ambiente de desenvolvimento."
+  },
+  {
+    "id": "feat-b1",
+    "level": "beginner",
+    "category": "features",
+    "answer": false,
+    "statement": "O Claude Code só consegue responder perguntas sobre código; ele nunca pode editar ou criar arquivos diretamente.",
+    "explanation": "O Claude Code pode ler, criar e editar arquivos do projeto, sempre respeitando o modelo de permissões."
+  },
+  {
+    "id": "apisdk-b1",
+    "level": "beginner",
+    "category": "api-sdk",
+    "answer": true,
+    "statement": "Além do uso interativo no terminal, existe um SDK (Claude Agent SDK) para integrar as mesmas capacidades em outras aplicações.",
+    "explanation": "O Claude Agent SDK expõe programaticamente as capacidades usadas pelo Claude Code."
+  },
+  {
+    "id": "boas-b1",
+    "level": "beginner",
+    "category": "boas-praticas",
+    "answer": false,
+    "statement": "Não existe nenhuma forma de fornecer contexto de projeto ao Claude Code; ele depende só do conhecimento geral do modelo.",
+    "explanation": "Um arquivo CLAUDE.md na raiz do projeto é a forma recomendada de fornecer contexto e convenções."
+  },
+  {
+    "id": "fund-b2",
+    "level": "beginner",
+    "category": "fundamentos",
+    "answer": true,
+    "statement": "O Claude Code pode executar comandos de shell além de ler e escrever arquivos, mediante permissão.",
+    "explanation": "Entre as ferramentas do Claude Code está a execução de comandos de shell, sujeita ao modelo de permissões."
+  },
+  {
+    "id": "feat-b2",
+    "level": "beginner",
+    "category": "features",
+    "answer": false,
+    "statement": "Comandos de barra (slash commands) no Claude Code são fixos e não podem ser customizados pelo usuário.",
+    "explanation": "É possível criar comandos de barra (slash commands) personalizados."
+  },
+  {
+    "id": "fund-i1",
+    "level": "intermediate",
+    "category": "fundamentos",
+    "answer": true,
+    "statement": "O arquivo CLAUDE.md pode conter convenções de código, comandos de build/test e decisões de arquitetura para orientar o Claude Code.",
+    "explanation": "Esse é o propósito recomendado do CLAUDE.md."
+  },
+  {
+    "id": "feat-i1",
+    "level": "intermediate",
+    "category": "features",
+    "answer": false,
+    "statement": "Hooks no Claude Code não podem interceptar nem reagir a eventos como antes/depois de uma ferramenta ser usada.",
+    "explanation": "Hooks permitem executar ações em pontos definidos do ciclo de vida, como antes ou depois do uso de uma ferramenta."
+  },
+  {
+    "id": "apisdk-i1",
+    "level": "intermediate",
+    "category": "api-sdk",
+    "answer": true,
+    "statement": "O modo headless do Claude Code permite executá-lo em scripts e pipelines de CI/CD sem interface interativa.",
+    "explanation": "O modo headless foi criado para automação e integração em pipelines."
+  },
+  {
+    "id": "boas-i1",
+    "level": "intermediate",
+    "category": "boas-praticas",
+    "answer": false,
+    "statement": "É considerado uma boa prática nunca revisar as alterações propostas pelo Claude Code antes de aceitá-las.",
+    "explanation": "Recomenda-se revisar diffs e mudanças propostas antes de aceitar, especialmente ações que alteram o sistema."
+  },
+  {
+    "id": "fund-i2",
+    "level": "intermediate",
+    "category": "fundamentos",
+    "answer": true,
+    "statement": "O Claude Code tem um modelo de permissões que pode exigir aprovação explícita antes de executar ações sensíveis.",
+    "explanation": "Ações que modificam arquivos ou executam comandos podem requerer aprovação do usuário conforme a configuração de permissões."
+  },
+  {
+    "id": "feat-i2",
+    "level": "intermediate",
+    "category": "features",
+    "answer": false,
+    "statement": "O Claude Code não oferece nenhum mecanismo para se conectar a ferramentas ou serviços externos além do que já vem embutido.",
+    "explanation": "O Model Context Protocol (MCP) permite conectar o Claude Code a ferramentas e serviços externos."
+  },
+  {
+    "id": "fund-a1",
+    "level": "advanced",
+    "category": "fundamentos",
+    "answer": true,
+    "statement": "Subagentes no Claude Code podem operar com um contexto isolado do agente principal, retornando apenas um resultado consolidado.",
+    "explanation": "Subagentes têm seu próprio contexto, isolado do principal, retornando um resumo/resultado ao final."
+  },
+  {
+    "id": "feat-a1",
+    "level": "advanced",
+    "category": "features",
+    "answer": false,
+    "statement": "O Model Context Protocol (MCP) serve apenas para formatação de texto e não permite expor ferramentas externas ao modelo.",
+    "explanation": "O MCP é um protocolo para conectar o modelo a ferramentas, dados e serviços externos."
+  },
+  {
+    "id": "apisdk-a1",
+    "level": "advanced",
+    "category": "api-sdk",
+    "answer": true,
+    "statement": "O Claude Agent SDK permite compor agentes customizados reaproveitando as mesmas ferramentas e modelo de permissões do Claude Code.",
+    "explanation": "O SDK foi criado para reaproveitar a mesma base de capacidades (ferramentas, permissões etc.) do Claude Code em outras aplicações."
+  },
+  {
+    "id": "boas-a1",
+    "level": "advanced",
+    "category": "boas-praticas",
+    "answer": false,
+    "statement": "A melhor prática para projetos grandes é evitar modularizar instruções e colocar tudo em um único arquivo CLAUDE.md gigante sem organização.",
+    "explanation": "Recomenda-se manter o contexto organizado e objetivo; arquivos longos e desorganizados dificultam o uso eficaz pelo modelo."
+  },
+  {
+    "id": "fund-a2",
+    "level": "advanced",
+    "category": "fundamentos",
+    "answer": true,
+    "statement": "Em fluxos automatizados (modo headless/non-interactive), o Claude Code pode ser configurado para operar com permissões mais restritas por padrão.",
+    "explanation": "Em contextos automatizados, é recomendado configurar explicitamente o nível de permissões para evitar ações não supervisionadas."
+  },
+  {
+    "id": "feat-a2",
+    "level": "advanced",
+    "category": "features",
+    "answer": false,
+    "statement": "Depois que uma sessão do Claude Code é finalizada, não existe nenhuma forma de reaproveitar ou consultar esse histórico posteriormente.",
+    "explanation": "O Claude Code mantém histórico de sessões/conversas que pode ser retomado ou consultado."
+  }
+]
