@@ -3,21 +3,40 @@
 /*
  * The app is always dark themed (dark mode + Anthropic orange accent), per
  * CLAUDE.md / prd.md section 12 — there is no light mode toggle.
+ *
+ * Contrast (WCAG AA needs 4.5:1 for text), worst case on --surface-raised:
+ * foreground 15.1, muted 7.3, brand 5.1, success 8.5, danger 6.7. On
+ * --background: 18.2 / 8.9 / 6.1 / 10.3 / 8.1. Text on a brand-colored button
+ * must be dark (--brand-contrast, 5.9:1): white on #d97757 is only 3.1:1.
+ * --border (1.6:1) is decorative only; form controls use --muted borders to
+ * meet the 3:1 non-text minimum.
  */
 :root {
   --background: #0f0f10;
-  --surface: #141413;
+  --surface: #1a1918;
+  --surface-raised: #24221f;
+  --border: #3a3734;
   --foreground: #faf9f5;
+  --muted: #b5b0a5;
   --brand: #d97757;
-  --brand-hover: #c2633f;
+  --brand-hover: #e58a6c;
+  --brand-contrast: #141413;
+  --success: #7ccf9a;
+  --danger: #f48b80;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
   --color-brand: var(--brand);
   --color-brand-hover: var(--brand-hover);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -25,5 +44,20 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
