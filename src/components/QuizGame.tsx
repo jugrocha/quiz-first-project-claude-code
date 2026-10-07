@@ -193,6 +193,10 @@ export function QuizGame({ gameId }: { gameId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Mounted while the question is open, so the verdict is announced reliably. */}
+      <p aria-live="polite" className="sr-only">
+        {phase.kind === 'feedback' ? verdict(phase.result) : ''}
+      </p>
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <h1 className="font-mono text-lg font-semibold">
@@ -267,6 +271,12 @@ export function QuizGame({ gameId }: { gameId: string }) {
       )}
     </div>
   );
+}
+
+function verdict(result: AnswerResult): string {
+  if (result.correct) return `${copy.feedback.correct} ${copy.feedback.points(result.points)}`;
+  const title = result.timedOut ? copy.feedback.timeout : copy.feedback.wrong;
+  return `${title} ${copy.feedback.correctAnswerWas(result.correctAnswer)}`;
 }
 
 function AnswerButton(props: {

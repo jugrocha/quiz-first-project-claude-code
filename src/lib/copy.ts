@@ -15,6 +15,11 @@ export function formatDuration(ms: number): string {
 export const copy = {
   meta: {
     title: 'Claude Code: Verdadeiro ou Falso',
+    /** Page titles become "<page> · Claude Code: Verdadeiro ou Falso". */
+    play: 'Partida',
+    result: 'Resultado',
+    ranking: 'Ranking',
+    notFound: 'Página não encontrada',
     description:
       'Quiz de verdadeiro ou falso sobre o Claude Code: 15 perguntas, 15 segundos cada, do básico ao avançado.',
   },
@@ -98,6 +103,8 @@ export const copy = {
     seeRanking: 'Ver ranking',
   },
   nav: {
+    skipToContent: 'Pular para o conteúdo',
+    newTab: '(abre em nova aba)',
     home: 'Início',
     ranking: 'Ranking',
     label: 'Navegação principal',
@@ -106,7 +113,7 @@ export const copy = {
     title: 'Ranking',
     intro: (size: number) => `As ${size} melhores partidas salvas.`,
     tieBreak: 'Empate: vence quem terminou em menos tempo, depois quem jogou primeiro.',
-    empty: 'Ninguém salvou uma partida ainda. Que tal ser o primeiro?',
+    empty: 'Ninguém salvou uma partida ainda. Que tal estrear o ranking?',
     unavailable: 'Não foi possível carregar o ranking agora.',
     retry: 'Tentar novamente',
     play: 'Jogar',
@@ -126,6 +133,14 @@ export const copy = {
     failed: 'Não foi possível copiar. Selecione e copie o texto abaixo:',
     text: (score: number, correct: number, total: number, url: string) =>
       `Fiz ${score} pts no quiz Claude Code (${correct}/${total}) 🧡 ${url}`,
+  },
+  errorPage: {
+    notFoundTitle: 'Página não encontrada',
+    notFoundText: 'O endereço pode estar errado ou a página não existe mais.',
+    errorTitle: 'Algo deu errado',
+    errorText: 'Tivemos um problema inesperado. Tente de novo em instantes.',
+    retry: 'Tentar novamente',
+    home: 'Voltar ao início',
   },
   errors: {
     INVALID_BODY: 'Requisição inválida.',

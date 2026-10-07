@@ -62,7 +62,7 @@ export function SaveScoreForm({ gameId }: { gameId: string }) {
   }
 
   if (saved) {
-    return <SavedNotice gameId={gameId} nickname={saved.nickname} rank={saved.rank} />;
+    return <SavedNotice gameId={gameId} nickname={saved.nickname} rank={saved.rank} focusOnMount />;
   }
 
   return (
@@ -113,11 +113,26 @@ export function SaveScoreForm({ gameId }: { gameId: string }) {
   );
 }
 
-/** Also rendered by the result page when the game was saved earlier. */
-export function SavedNotice(props: { gameId: string; nickname: string; rank: number }) {
+/**
+ * Also rendered by the result page when the game was saved earlier. Right
+ * after saving it replaces the form, so it takes focus: a status region
+ * inserted together with its text is not reliably announced.
+ */
+export function SavedNotice(props: {
+  gameId: string;
+  nickname: string;
+  rank: number;
+  focusOnMount?: boolean;
+}) {
+  const messageRef = useRef<HTMLParagraphElement>(null);
+  const { focusOnMount } = props;
+  useEffect(() => {
+    if (focusOnMount) messageRef.current?.focus();
+  }, [focusOnMount]);
+
   return (
     <div className="flex flex-col items-start gap-3 rounded-xl border border-success bg-surface p-5">
-      <p role="status" className="text-success">
+      <p ref={messageRef} tabIndex={-1} className="text-success outline-none">
         {copy.save.saved(props.nickname, props.rank)}
       </p>
       <Link

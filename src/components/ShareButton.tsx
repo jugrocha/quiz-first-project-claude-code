@@ -39,7 +39,7 @@ export function ShareButton({ score, correctCount, total }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
       <button
         type="button"
         onClick={share}
@@ -47,11 +47,12 @@ export function ShareButton({ score, correctCount, total }: Props) {
       >
         {copy.share.button}
       </button>
-      <p role="status" className="text-sm text-success empty:hidden">
+      {/* Always rendered (not display:none) so screen readers announce it. */}
+      <p role="status" className={`text-sm text-success ${status === 'copied' ? 'mt-3' : ''}`}>
         {status === 'copied' ? copy.share.copied : ''}
       </p>
       {status === 'failed' && (
-        <div className="flex flex-col gap-2">
+        <div className="mt-3 flex flex-col gap-2">
           <label htmlFor="share-text" className="text-sm text-muted">
             {copy.share.failed}
           </label>

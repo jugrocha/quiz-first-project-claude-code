@@ -12,6 +12,8 @@
  * meet the 3:1 non-text minimum.
  */
 :root {
+  /* Native controls and scrollbars in dark too. */
+  color-scheme: dark;
   --background: #0f0f10;
   --surface: #1a1918;
   --surface-raised: #24221f;

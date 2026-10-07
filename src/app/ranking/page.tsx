@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { StartButton } from '@/components/StartButton';
 import { copy, formatDuration } from '@/lib/copy';
@@ -5,6 +6,8 @@ import { getGameResult, getRanking, RANKING_SIZE } from '@/lib/game-service';
 import { StorageError } from '@/lib/game-store';
 import { TOTAL_QUESTIONS } from '@/lib/scoring';
 import type { RankingEntryPayload } from '@/types/api';
+
+export const metadata: Metadata = { title: copy.meta.ranking };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CheckIcon, ClockIcon, CrossIcon } from '@/components/icons';
 import { SavedNotice, SaveScoreForm } from '@/components/SaveScoreForm';
@@ -6,6 +7,8 @@ import { StartButton } from '@/components/StartButton';
 import { copy, formatDuration } from '@/lib/copy';
 import { getGameResult } from '@/lib/game-service';
 import type { GameSummary } from '@/types/api';
+
+export const metadata: Metadata = { title: copy.meta.result };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -74,22 +77,26 @@ function Message(props: { title: string; text: string; children: React.ReactNode
 }
 
 function Summary({ summary }: { summary: GameSummary }) {
+  // At 360 px the two text values get a full row so they never overflow.
   const items = [
     { label: copy.result.score, value: String(summary.score), highlight: true },
     {
       label: copy.result.correct,
       value: copy.result.correctOf(summary.correctCount, summary.total),
     },
-    { label: copy.result.time, value: formatDuration(summary.durationMs) },
-    { label: copy.result.classification, value: summary.classification },
+    { label: copy.result.time, value: formatDuration(summary.durationMs), wide: true },
+    { label: copy.result.classification, value: summary.classification, wide: true },
   ];
   return (
     <dl className="grid grid-cols-2 gap-3">
       {items.map((item) => (
-        <div key={item.label} className="rounded-xl border border-border bg-surface p-4">
+        <div
+          key={item.label}
+          className={`rounded-xl border border-border bg-surface p-4 ${item.wide ? 'max-sm:col-span-2' : ''}`}
+        >
           <dt className="text-sm text-muted">{item.label}</dt>
           <dd
-            className={`mt-1 font-mono text-2xl font-bold ${item.highlight ? 'text-brand' : 'text-foreground'}`}
+            className={`mt-1 font-mono text-2xl font-bold wrap-break-word ${item.highlight ? 'text-brand' : 'text-foreground'}`}
           >
             {item.value}
           </dd>
@@ -119,7 +126,7 @@ function Review({ summary }: { summary: GameSummary }) {
             >
               <p className="text-lg">{item.statement}</p>
               <dl className="grid gap-1 text-sm sm:grid-cols-2">
-                <div className="flex items-center gap-2 text-danger">
+                <div className="flex flex-wrap items-center gap-x-2 text-danger">
                   {item.timedOut ? <ClockIcon /> : <CrossIcon />}
                   <dt>{copy.result.yourAnswer}:</dt>
                   <dd className="font-semibold">
@@ -128,7 +135,7 @@ function Review({ summary }: { summary: GameSummary }) {
                       : copy.result.answer(item.yourAnswer)}
                   </dd>
                 </div>
-                <div className="flex items-center gap-2 text-success">
+                <div className="flex flex-wrap items-center gap-x-2 text-success">
                   <CheckIcon />
                   <dt>{copy.result.correctAnswer}:</dt>
                   <dd className="font-semibold">{copy.result.answer(item.correctAnswer)}</dd>
@@ -143,6 +150,7 @@ function Review({ summary }: { summary: GameSummary }) {
                   className="self-start text-brand underline underline-offset-4 hover:text-brand-hover"
                 >
                   {copy.feedback.docLink}
+                  <span className="sr-only"> {copy.nav.newTab}</span>
                 </a>
               )}
             </li>

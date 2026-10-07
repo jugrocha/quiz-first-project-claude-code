@@ -11,7 +11,9 @@ type Props = {
 };
 
 /**
- * Shown after each answer. Wrong answers and timeouts always show the correct
+ * Shown after each answer. Screen readers hear the verdict from QuizGame's
+ * live region (always mounted, so the announcement is reliable); focus then
+ * lands on the Next button. Wrong answers and timeouts always show the correct
  * answer and the explanation (PRD 5.4); on a right answer the explanation is
  * collapsible. There is no auto-advance, so everyone gets time to read.
  */
@@ -38,6 +40,7 @@ export function FeedbackPanel({ result, onContinue }: Props) {
           className="mt-2 inline-block text-brand underline underline-offset-4 hover:text-brand-hover"
         >
           {copy.feedback.docLink}
+          <span className="sr-only"> {copy.nav.newTab}</span>
         </a>
       )}
     </>
@@ -45,7 +48,7 @@ export function FeedbackPanel({ result, onContinue }: Props) {
 
   return (
     <section className={`flex flex-col gap-4 rounded-xl border-2 bg-surface p-5 ${tone}`}>
-      <div role="status" className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1">
         <p className="flex items-center gap-2 text-xl font-bold">
           <Icon className="size-6" />
           {title}
