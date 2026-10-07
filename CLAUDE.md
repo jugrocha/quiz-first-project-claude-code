@@ -12,7 +12,7 @@ Commands:
 npm run dev          # start the dev server
 npm run build         # production build
 npm run lint          # eslint
-npm run typecheck     # tsc --noEmit
+npm run typecheck     # next typegen + tsc --noEmit
 npm run format         # prettier --write .
 npm run format:check  # prettier --check .
 npm test               # vitest run
