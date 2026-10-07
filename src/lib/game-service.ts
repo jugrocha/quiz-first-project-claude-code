@@ -225,7 +225,19 @@ export async function getGameResult(gameId: string): Promise<GameResult> {
   };
 }
 
-export async function getRanking(): Promise<{ entries: RankingEntryPayload[] }> {
+/**
+ * Top 20 saved games. `highlightGameId` marks the player's own row (for the
+ * ranking page after saving); game ids themselves are never returned.
+ */
+export async function getRanking(
+  options: { highlightGameId?: string } = {},
+): Promise<{ entries: RankingEntryPayload[] }> {
   const rows = await getGameStore().topRanking(RANKING_SIZE);
-  return { entries: rows.map((row, i) => ({ rank: i + 1, ...row })) };
+  return {
+    entries: rows.map(({ id, ...row }, i) => ({
+      rank: i + 1,
+      ...row,
+      ...(options.highlightGameId === id ? { isYou: true } : {}),
+    })),
+  };
 }

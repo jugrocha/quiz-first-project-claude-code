@@ -62,4 +62,6 @@ export type RankingEntryPayload = {
   score: number;
   correctCount: number;
   durationMs: number;
+  /** Only on the ranking page, for the row of the game that was just saved. */
+  isYou?: true;
 };

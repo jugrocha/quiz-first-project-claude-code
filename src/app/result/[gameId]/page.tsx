@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { CheckIcon, ClockIcon, CrossIcon } from '@/components/icons';
-import { SaveScoreForm } from '@/components/SaveScoreForm';
+import { SavedNotice, SaveScoreForm } from '@/components/SaveScoreForm';
+import { ShareButton } from '@/components/ShareButton';
 import { StartButton } from '@/components/StartButton';
 import { copy, formatDuration } from '@/lib/copy';
 import { getGameResult } from '@/lib/game-service';
@@ -43,15 +44,18 @@ export default async function ResultPage({ params }: PageProps<'/result/[gameId]
       <Summary summary={summary} />
 
       {saved ? (
-        <p className="rounded-xl border border-success bg-surface p-5 text-success">
-          {copy.save.saved(saved.nickname, saved.rank)}
-        </p>
+        <SavedNotice gameId={gameId} nickname={saved.nickname} rank={saved.rank} />
       ) : (
         <SaveScoreForm gameId={gameId} />
       )}
 
-      <div className="sm:self-start">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <StartButton label={copy.result.playAgain} />
+        <ShareButton
+          score={summary.score}
+          correctCount={summary.correctCount}
+          total={summary.total}
+        />
       </div>
 
       <Review summary={summary} />

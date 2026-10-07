@@ -95,6 +95,37 @@ export const copy = {
     saving: 'Salvando…',
     saved: (nickname: string, rank: number) =>
       `Salvo como ${nickname}. Você está em #${rank} no ranking.`,
+    seeRanking: 'Ver ranking',
+  },
+  nav: {
+    home: 'Início',
+    ranking: 'Ranking',
+    label: 'Navegação principal',
+  },
+  ranking: {
+    title: 'Ranking',
+    intro: (size: number) => `As ${size} melhores partidas salvas.`,
+    tieBreak: 'Empate: vence quem terminou em menos tempo, depois quem jogou primeiro.',
+    empty: 'Ninguém salvou uma partida ainda. Que tal ser o primeiro?',
+    unavailable: 'Não foi possível carregar o ranking agora.',
+    retry: 'Tentar novamente',
+    play: 'Jogar',
+    columns: {
+      rank: 'Posição',
+      nickname: 'Nickname',
+      score: 'Pontos',
+      correct: 'Acertos',
+      time: 'Tempo',
+    },
+    you: 'você',
+    yourRank: (rank: number) => `Sua partida está em #${rank}.`,
+  },
+  share: {
+    button: 'Compartilhar resultado',
+    copied: 'Texto copiado! Agora é só colar onde quiser.',
+    failed: 'Não foi possível copiar. Selecione e copie o texto abaixo:',
+    text: (score: number, correct: number, total: number, url: string) =>
+      `Fiz ${score} pts no quiz Claude Code (${correct}/${total}) 🧡 ${url}`,
   },
   errors: {
     INVALID_BODY: 'Requisição inválida.',

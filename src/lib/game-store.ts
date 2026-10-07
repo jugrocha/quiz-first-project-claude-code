@@ -43,6 +43,8 @@ export type AnswerUpdate = Pick<
 >;
 
 export type RankingRow = {
+  /** Server-side only, to highlight the player's own row; never sent by the API. */
+  id: string;
   nickname: string;
   score: number;
   correctCount: number;
@@ -155,6 +157,7 @@ export function createMemoryGameStore(): MemoryGameStore {
       return savedGames()
         .slice(0, limit)
         .map((game) => ({
+          id: game.id,
           nickname: game.nickname ?? '',
           score: game.score,
           correctCount: game.correctCount,
@@ -315,7 +318,7 @@ export function createSupabaseGameStore(): SupabaseGameStore {
       const rows = check(
         await db()
           .from('games')
-          .select('nickname, score, correct_count, duration_ms')
+          .select('id, nickname, score, correct_count, duration_ms')
           .not('saved_at', 'is', null)
           .order('score', { ascending: false })
           .order('duration_ms', { ascending: true })
@@ -324,6 +327,7 @@ export function createSupabaseGameStore(): SupabaseGameStore {
         'topRanking',
       );
       return (rows ?? []).map((row) => ({
+        id: row.id,
         nickname: row.nickname ?? '',
         score: row.score,
         correctCount: row.correct_count,

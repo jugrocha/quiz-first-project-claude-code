@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { ApiRequestError, apiClient } from '@/lib/api-client';
 import { copy } from '@/lib/copy';
@@ -61,11 +62,7 @@ export function SaveScoreForm({ gameId }: { gameId: string }) {
   }
 
   if (saved) {
-    return (
-      <p role="status" className="rounded-xl border border-success bg-surface p-5 text-success">
-        {copy.save.saved(saved.nickname, saved.rank)}
-      </p>
-    );
+    return <SavedNotice gameId={gameId} nickname={saved.nickname} rank={saved.rank} />;
   }
 
   return (
@@ -113,5 +110,22 @@ export function SaveScoreForm({ gameId }: { gameId: string }) {
         </p>
       )}
     </form>
+  );
+}
+
+/** Also rendered by the result page when the game was saved earlier. */
+export function SavedNotice(props: { gameId: string; nickname: string; rank: number }) {
+  return (
+    <div className="flex flex-col items-start gap-3 rounded-xl border border-success bg-surface p-5">
+      <p role="status" className="text-success">
+        {copy.save.saved(props.nickname, props.rank)}
+      </p>
+      <Link
+        href={`/ranking?partida=${props.gameId}`}
+        className="text-brand underline underline-offset-4 hover:text-brand-hover"
+      >
+        {copy.save.seeRanking}
+      </Link>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { getGameResult } from '@/lib/game-service';
+import { getGameResult, getRanking } from '@/lib/game-service';
 import { createMemoryGameStore, setGameStoreForTesting, type GameStore } from '@/lib/game-store';
 import { loadQuestions } from '@/lib/questions';
 import { resetRateLimits, RATE_LIMITS } from '@/lib/rate-limit';
@@ -376,6 +376,30 @@ describe('GET /api/ranking', () => {
     const second = await playGame();
     await api.save(second.gameId, { nickname: 'segundo' });
     expect(await json(await api.save(first.gameId, { nickname: 'primeiro' }))).toEqual({ rank: 1 });
+  });
+});
+
+describe('ranking highlight', () => {
+  it('the public API never exposes game ids', async () => {
+    const { gameId } = await playGame();
+    await api.save(gameId, { nickname: 'jogador' });
+    const body = JSON.stringify(await json(await api.ranking()));
+    expect(body).not.toContain(gameId);
+    expect(body).not.toMatch(/"id"|isYou/);
+  });
+
+  it("marks only the player's own row when asked to", async () => {
+    const mine = await playGame();
+    const other = await playGame((i) => (i === 0 ? 'wrong' : 'right'));
+    await api.save(mine.gameId, { nickname: 'euzinha' });
+    await api.save(other.gameId, { nickname: 'outro' });
+
+    const { entries } = await getRanking({ highlightGameId: other.gameId });
+    expect(entries.map((e) => [e.nickname, e.isYou ?? false])).toEqual([
+      ['euzinha', false],
+      ['outro', true],
+    ]);
+    expect(JSON.stringify(entries)).not.toContain(other.gameId);
   });
 });
 
