@@ -21,7 +21,7 @@ npm run test:watch    # vitest watch mode
 
 ## Planned stack and commands
 
-Next.js (App Router) + TypeScript (strict) + Tailwind, Vitest for unit/API tests, optional Playwright E2E, ESLint + Prettier. Supabase Postgres for persistence, deployed on Vercel. Local development uses the Supabase CLI (`supabase start`, requires Docker) with migrations in `supabase/migrations`. Production uses a Supabase Cloud Free project, because Vercel can't reach the local instance. CI is planned as GitHub Actions running lint, typecheck and tests.
+Next.js (App Router) + TypeScript (strict) + Tailwind, Vitest for unit/API tests, optional Playwright E2E, ESLint + Prettier. Supabase Postgres for persistence, deployed on Vercel. Local development uses the Supabase CLI (`supabase start`, requires Docker) with migrations in `supabase/migrations`. Production uses a Supabase Cloud Free project, because Vercel can't reach the local instance. CI runs on GitHub Actions (`.github/workflows/ci.yml`): lint, typecheck, tests and build on every push to main and every PR.
 
 Env vars (`.env.example` should point at `http://127.0.0.1:54321` locally): `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (server only, never `NEXT_PUBLIC_`), `NEXT_PUBLIC_SITE_URL`.
 
@@ -40,7 +40,7 @@ Env vars (`.env.example` should point at `http://127.0.0.1:54321` locally): `SUP
   - Each question can be answered only once and in order. A game can be saved only once, and only after it is finished.
   - Enforce "only once" atomically, not with read-then-write: update with a guard on the expected state (`.eq('current_index', expected)` for answers, `.is('saved_at', null)` for saves) and treat zero updated rows as a conflict error. Two concurrent requests must not both succeed.
   - `games.answers` is unvalidated JSON from the DB. Always read it through `parseStoredAnswers` (`src/types/database.ts`).
-- **Stale games:** unsaved games older than 7 days can be deleted with `select public.purge_unsaved_games();`. It is not scheduled yet; on Supabase Cloud schedule it with pg_cron, and document that in the README (step 11).
+- **Stale games:** unsaved games older than 7 days are deleted daily at 04:00 UTC by the pg_cron job `purge-unsaved-games` (migration `20261007120000_schedule_purge.sql`). Run it by hand with `select public.purge_unsaved_games();`.
 - **Timer:** 15 s per question. The client bar is visual only. The server compares against `question_shown_at` and treats an answer arriving after 15 s + 2 s tolerance as a timeout (0 points). The client sends `answer: null` when the timer hits zero.
 - **Supabase access is server-only** through the service role. RLS is enabled with no public policies.
 - **Rate limiting** on the write endpoints is per IP, in memory (`lib/rate-limit.ts`): per instance on Vercel and no IP is stored, so no hashing salt is needed. Swap for a shared store if it must be stricter.
