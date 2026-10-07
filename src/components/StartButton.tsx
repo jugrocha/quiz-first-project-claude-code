@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ApiRequestError, apiClient } from '@/lib/api-client';
 import { copy } from '@/lib/copy';
+import { readSeenQuestions } from '@/lib/seen-questions';
 
 /** Creates a game and goes to it. Used on the home page and to play again. */
 export function StartButton({ label = copy.home.play }: { label?: string }) {
@@ -15,7 +16,7 @@ export function StartButton({ label = copy.home.play }: { label?: string }) {
     setStarting(true);
     setError(null);
     try {
-      const game = await apiClient.createGame();
+      const game = await apiClient.createGame(readSeenQuestions());
       router.push(`/play/${game.gameId}`);
     } catch (e) {
       setError(e instanceof ApiRequestError ? e.message : copy.errors.INTERNAL);

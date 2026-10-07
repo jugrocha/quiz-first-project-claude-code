@@ -39,7 +39,7 @@ export async function json<T = Record<string, unknown>>(response: Response): Pro
 }
 
 export const api = {
-  createGame: (ip?: string) => createGameRoute(post('/api/games', undefined, ip)),
+  createGame: (ip?: string, body?: unknown) => createGameRoute(post('/api/games', body, ip)),
   next: (id: string) => nextRoute(post(`/api/games/${id}/next`), ctx(id)),
   answer: (id: string, body: unknown) =>
     answerRoute(post(`/api/games/${id}/answer`, body), ctx(id)),

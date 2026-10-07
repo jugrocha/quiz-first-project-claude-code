@@ -403,6 +403,29 @@ describe('ranking highlight', () => {
   });
 });
 
+describe('play again prefers unseen questions (RF-11)', () => {
+  it('draws no question from the previous game when the bank has enough', async () => {
+    const first = await questionIdsOf((await startGame()).gameId);
+    const response = await api.createGame(undefined, { seen: first });
+    expect(response.status).toBe(201);
+    const second = await questionIdsOf((await json<QuestionPayload>(response)).gameId);
+    expect(second.filter((id) => first.includes(id))).toEqual([]);
+  });
+
+  it('still creates a game when every question was seen', async () => {
+    const all = loadQuestions().map((q) => q.id);
+    expect((await api.createGame(undefined, { seen: all })).status).toBe(201);
+  });
+
+  it.each([
+    ['not JSON', 'nope'],
+    ['seen is not a list', { seen: 'fund-b1' }],
+    ['too many ids', { seen: Array.from({ length: 101 }, (_, i) => `q-${i}`) }],
+  ])('rejects a body that is %s', async (_label, body) => {
+    await expectError(await api.createGame(undefined, body), 400, 'INVALID_BODY');
+  });
+});
+
 describe('rate limiting', () => {
   it('returns 429 with Retry-After once an IP creates too many games', async () => {
     for (let i = 0; i < RATE_LIMITS.createGame; i++) {

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  MIN_PER_LEVEL,
   drawGameQuestions,
   loadQuestions,
   toPublicQuestion,
   validateQuestionBank,
 } from '@/lib/questions';
-import { QuestionSchema, type Question } from '@/types/question';
+import { CategorySchema, LevelSchema, QuestionSchema, type Question } from '@/types/question';
 import { buildQuestionPool } from '../fixtures/questions.fixture';
 
 const validQuestion: Question = {
@@ -46,11 +47,47 @@ describe('loadQuestions', () => {
   it('loads the real seed file without throwing', () => {
     expect(() => loadQuestions()).not.toThrow();
   });
+});
 
-  it('has exactly 6 questions per level in the current seed', () => {
-    const questions = loadQuestions();
-    for (const level of ['beginner', 'intermediate', 'advanced'] as const) {
-      expect(questions.filter((q) => q.level === level)).toHaveLength(6);
+/** PRD 11.3 targets for the real bank. */
+describe('question bank content', () => {
+  const questions = loadQuestions();
+
+  it('has 30-50 questions in total, about half of them true', () => {
+    expect(questions.length).toBeGreaterThanOrEqual(30);
+    expect(questions.length).toBeLessThanOrEqual(50);
+    const trueShare = questions.filter((q) => q.answer).length / questions.length;
+    expect(trueShare).toBeGreaterThanOrEqual(0.45);
+    expect(trueShare).toBeLessThanOrEqual(0.55);
+  });
+
+  it.each(LevelSchema.options)(
+    '%s: enough questions, about 50/50 true/false, every category',
+    (level) => {
+      const pool = questions.filter((q) => q.level === level);
+      expect(pool.length).toBeGreaterThanOrEqual(MIN_PER_LEVEL);
+      const trueShare = pool.filter((q) => q.answer).length / pool.length;
+      expect(trueShare).toBeGreaterThanOrEqual(0.4);
+      expect(trueShare).toBeLessThanOrEqual(0.6);
+      expect(new Set(pool.map((q) => q.category))).toEqual(new Set(CategorySchema.options));
+    },
+  );
+
+  it('links every question to the official Claude Code docs', () => {
+    for (const q of questions) {
+      expect(q.docUrl, q.id).toMatch(/^https:\/\/code\.claude\.com\/docs\/en\//);
+    }
+  });
+
+  it('keeps statements short enough to read within the 15 s timer', () => {
+    for (const q of questions) {
+      expect(q.statement.length, q.id).toBeLessThanOrEqual(160);
+    }
+  });
+
+  it('draws a valid game from the real bank', () => {
+    for (let i = 0; i < 200; i++) {
+      expect(drawGameQuestions(questions)).toHaveLength(15);
     }
   });
 });
@@ -104,6 +141,24 @@ describe('drawGameQuestions', () => {
         }
       }
     }
+  });
+
+  it('prefers questions not seen yet', () => {
+    const beginners = pool.filter((q) => q.level === 'beginner');
+    // 15 of the 20 beginners were seen: the 5 unseen ones must all be drawn.
+    const seen = new Set(beginners.slice(0, 15).map((q) => q.id));
+    const unseen = beginners.slice(15).map((q) => q.id);
+    for (let i = 0; i < 100; i++) {
+      const band = drawGameQuestions(pool, { seen }).slice(0, 5);
+      expect(band.map((q) => q.id).sort()).toEqual([...unseen].sort());
+    }
+  });
+
+  it('falls back to seen questions when there are not enough unseen ones', () => {
+    const seen = new Set(pool.map((q) => q.id));
+    const drawn = drawGameQuestions(pool, { seen });
+    expect(drawn).toHaveLength(15);
+    expect(new Set(drawn.map((q) => q.id)).size).toBe(15);
   });
 
   it('throws a clear error if the pool cannot satisfy the category balance', () => {

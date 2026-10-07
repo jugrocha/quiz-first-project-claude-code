@@ -5,9 +5,8 @@ const CATEGORIES: Category[] = ['fundamentos', 'features', 'api-sdk', 'boas-prat
 
 /**
  * A larger synthetic pool (default: 20 questions per level, spread evenly
- * across the 4 categories), used only for draw-balance stress tests. The
- * real seed (src/data/questions.json) only has 6 per level, which isn't
- * enough headroom to meaningfully stress-test the category cap.
+ * across the 4 categories), used for draw-balance stress tests independent
+ * of the real bank's content.
  */
 export function buildQuestionPool(perLevel = 20): Question[] {
   const questions: Question[] = [];

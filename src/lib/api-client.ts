@@ -36,7 +36,7 @@ async function post<T>(path: string, body?: unknown): Promise<T> {
 }
 
 export const apiClient = {
-  createGame: () => post<QuestionPayload>('/api/games'),
+  createGame: (seen: string[] = []) => post<QuestionPayload>('/api/games', { seen }),
   next: (gameId: string) => post<QuestionPayload>(`/api/games/${gameId}/next`),
   answer: (gameId: string, questionId: string, answer: boolean | null) =>
     post<AnswerResult>(`/api/games/${gameId}/answer`, { questionId, answer }),

@@ -8,6 +8,7 @@ import { StartButton } from '@/components/StartButton';
 import { TimerBar } from '@/components/TimerBar';
 import { ApiRequestError, apiClient } from '@/lib/api-client';
 import { copy } from '@/lib/copy';
+import { rememberSeenQuestion } from '@/lib/seen-questions';
 import type { AnswerResult, QuestionPayload } from '@/types/api';
 
 /** What "Tentar novamente" repeats after a failed request. */
@@ -58,6 +59,7 @@ export function QuizGame({ gameId }: { gameId: string }) {
   );
 
   const showQuestion = useCallback((payload: QuestionPayload) => {
+    rememberSeenQuestion(payload.question.id);
     setScore(payload.score);
     setPhase({
       kind: 'question',

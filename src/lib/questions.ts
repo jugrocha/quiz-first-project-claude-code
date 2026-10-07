@@ -15,14 +15,8 @@ export function loadQuestions(): Question[] {
   return QuestionsArraySchema.parse(rawQuestions);
 }
 
-/**
- * Bank-level invariants that don't fit the per-item zod schema.
- *
- * NOTE: SEED_MIN_PER_LEVEL (4) is a floor for the current placeholder seed
- * data (src/data/questions.json). The PRD's real target is >=10 per level
- * (section 11.3) — raise this once the bank is grown (roadmap step 8).
- */
-const SEED_MIN_PER_LEVEL = 4;
+/** Bank-level invariants that don't fit the per-item zod schema (PRD 11.3). */
+export const MIN_PER_LEVEL = 10;
 
 export function validateQuestionBank(questions: Question[]): void {
   const ids = new Set<string>();
@@ -35,8 +29,8 @@ export function validateQuestionBank(questions: Question[]): void {
 
   for (const level of LEVELS) {
     const count = questions.filter((q) => q.level === level).length;
-    if (count < SEED_MIN_PER_LEVEL) {
-      throw new Error(`Level ${level} has only ${count} questions (min ${SEED_MIN_PER_LEVEL})`);
+    if (count < MIN_PER_LEVEL) {
+      throw new Error(`Level ${level} has only ${count} questions (min ${MIN_PER_LEVEL})`);
     }
   }
 }
@@ -44,6 +38,11 @@ export function validateQuestionBank(questions: Question[]): void {
 export interface DrawOptions {
   /** Injectable RNG (must return a float in [0, 1)) for deterministic tests. */
   random?: () => number;
+  /**
+   * Ids the player has already seen this session (RF-11). They are drawn only
+   * when there aren't enough unseen questions to fill a band.
+   */
+  seen?: ReadonlySet<string>;
 }
 
 function shuffle<T>(items: T[], random: () => number): T[] {
@@ -64,8 +63,12 @@ function drawBand(
   count: number,
   categoryCap: number,
   random: () => number,
+  seen: ReadonlySet<string>,
 ): Question[] {
-  const shuffled = shuffle(pool, random);
+  // Unseen questions first, each group shuffled.
+  const shuffled = shuffle(pool, random).sort(
+    (a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id)),
+  );
   const picked: Question[] = [];
   const categoryCounts = new Map<string, number>();
 
@@ -87,18 +90,23 @@ function drawBand(
 /**
  * Draws the 15 questions for a game: 5 beginner + 5 intermediate + 5 advanced,
  * in that fixed band order. No repeats within a game, at most 2 per category
- * per band, order within a band shuffled.
+ * per band, unseen questions preferred, order within a band shuffled.
  */
 export function drawGameQuestions(allQuestions: Question[], options: DrawOptions = {}): Question[] {
   const random = options.random ?? Math.random;
-  return LEVELS.flatMap((level) =>
-    drawBand(
+  const seen = options.seen ?? new Set<string>();
+  return LEVELS.flatMap((level) => {
+    const band = drawBand(
       allQuestions.filter((q) => q.level === level),
       5,
       2,
       random,
-    ),
-  );
+      seen,
+    );
+    // The greedy pick visits unseen questions first; shuffle again so seen
+    // fillers don't always land at the end of the band.
+    return shuffle(band, random);
+  });
 }
 
 export function toPublicQuestion(q: Question): PublicQuestion {

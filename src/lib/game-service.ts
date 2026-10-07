@@ -66,8 +66,9 @@ function questionPayload(game: GameRecord, shownAt: string): QuestionPayload {
   };
 }
 
-export async function startGame(): Promise<QuestionPayload> {
-  const questions = drawGameQuestions([...questionBank().values()]);
+/** `seen`: question ids the player saw earlier this session, drawn last (RF-11). */
+export async function startGame(seen: readonly string[] = []): Promise<QuestionPayload> {
+  const questions = drawGameQuestions([...questionBank().values()], { seen: new Set(seen) });
   const now = nowIso();
   const game = await getGameStore().create({
     questionIds: questions.map((q) => q.id),
@@ -102,8 +103,11 @@ export async function showNextQuestion(gameId: string): Promise<QuestionPayload>
 function buildSummary(game: GameRecord & { finishedAt: string }): GameSummary {
   const review = game.answers
     .filter((answer) => !answer.correct)
-    .map((answer) => {
-      const question = questionBank().get(answer.questionId)!;
+    .flatMap((answer) => {
+      // A question removed from the bank after the game was played is left
+      // out of the review; the stored score and counts are unaffected.
+      const question = questionBank().get(answer.questionId);
+      if (!question) return [];
       return {
         questionId: question.id,
         statement: question.statement,

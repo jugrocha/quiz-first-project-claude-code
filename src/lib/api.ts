@@ -66,13 +66,16 @@ export function parseGameId(id: string): string {
   return result.data;
 }
 
+/** Parses a JSON body. With `optional`, an empty body is read as `{}`. */
 export async function parseBody<T extends z.ZodType>(
   request: Request,
   schema: T,
+  { optional = false }: { optional?: boolean } = {},
 ): Promise<z.infer<T>> {
   let json: unknown;
   try {
-    json = await request.json();
+    const text = await request.text();
+    json = optional && text.trim() === '' ? {} : JSON.parse(text);
   } catch {
     throw new ApiError('INVALID_BODY');
   }
